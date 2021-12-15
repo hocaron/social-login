@@ -12,6 +12,8 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    // TODO 회원가입 부분 추가
+    // await bcrypt.hash(pass, 10)
     return 'This action adds a new user';
   }
 
