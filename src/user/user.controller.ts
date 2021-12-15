@@ -12,6 +12,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthService } from './../auth/auth.service';
 import { LocalAuthGuard } from './../auth/guard/local-auth.guard';
 import { JwtAuthGuard } from './../auth/guard/jwt-auth.guard';
+import { User } from './../common/user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -22,15 +23,14 @@ export class UserController {
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@User() user) {
+    return this.authService.login(user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    console.log(req);
-    return req.user;
+  getProfile(@User() user) {
+    return user;
   }
 
   @Post()
