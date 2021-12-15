@@ -7,7 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategy/local.strategy';
 
 @Module({
-  imports: [PassportModule, TypeOrmModule.forFeature([User])],
+  imports: [PassportModule],
   controllers: [AuthController, LocalStrategy],
   providers: [AuthService],
 })
