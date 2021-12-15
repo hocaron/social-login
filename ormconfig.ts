@@ -16,7 +16,7 @@ const config: TypeOrmModuleOptions = {
   autoLoadEntities: true,
   timezone: 'Z',
   charset: 'utf8mb4',
-  synchronize: true,
+  synchronize: false,
 };
 
 export = config;
