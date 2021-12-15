@@ -11,12 +11,11 @@ export class AuthService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
     private jwtService: JwtService,
+    private userService: UserService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersRepository.findOne({
-      where: { email },
-    });
+    const user = await this.userService.findUserByEmail(email);
     const password = await bcrypt.compare(pass, user.password);
     if (password) {
       const { password, ...userWithoutPassword } = user;
