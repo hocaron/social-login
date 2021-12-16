@@ -24,6 +24,14 @@ export class AuthService {
     return null;
   }
 
+  async validateKakao(email: string): Promise<any> {
+    const user = await this.userService.findUserByEmail(email);
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
+
   async login(user: any) {
     const payload = { userId: user.id };
     return {
