@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './../user/entities/user.entity';
 import { UserModule } from './../user/user.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { KakaoStrategy } from './strategy/kakao.strategy';
 
 @Module({
   imports: [
@@ -19,7 +20,13 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     TypeOrmModule.forFeature([User]),
     forwardRef(() => UserModule),
   ],
-  providers: [AuthService, JwtModule, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    JwtModule,
+    LocalStrategy,
+    JwtStrategy,
+    KakaoStrategy,
+  ],
   exports: [AuthService, JwtModule, PassportModule],
 })
 export class AuthModule {}
