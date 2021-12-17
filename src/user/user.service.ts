@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { Err } from './../error';
+import { existsSync } from 'fs';
 
 @Injectable()
 export class UserService {
@@ -12,8 +13,11 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    // TODO 회원가입 부분 추가
+  async create(email: string, password: string) {
+    const exitstigUser = await this.findUserByEmail(email);
+    if (exitstigUser) {
+      throw new BadRequestException(Err.USER.EXISTING_USER);
+    }
     // await bcrypt.hash(pass, 10)
     return 'This action adds a new user';
   }

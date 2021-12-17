@@ -4,15 +4,17 @@ import {
   Post,
   Body,
   UseGuards,
-  Request,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthService } from './../auth/auth.service';
 import { LocalAuthGuard } from './../auth/guard/local-auth.guard';
 import { JwtAuthGuard } from './../auth/guard/jwt-auth.guard';
 import { User } from './../common/user.decorator';
+import { KakaoAuthGuard } from './../auth/guard/kakao-auth.guard';
+import { Response } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -31,6 +33,24 @@ export class UserController {
   @Get('profile')
   getProfile(@User() user) {
     return user;
+  }
+
+  @UseGuards(KakaoAuthGuard)
+  @Get('auth/kakao')
+  async kakaoLogin() {
+    return;
+  }
+
+  @UseGuards(KakaoAuthGuard)
+  @Get('auth/kakao/callback')
+  async kakaocallback(@Req() req, @Res() res: Response): Promise<any> {
+    if (req.user.type === 'login') {
+      return this.authService.login(req.user);
+    } else {
+      res.cookie('once_token', req.user.once_token);
+    }
+    res.redirect('http://localhost:3000/auth/singup');
+    res.end();
   }
 
   @Post()
