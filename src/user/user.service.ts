@@ -14,10 +14,7 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const exitstigUser = await this.findUserByEmail(createUserDto.email);
-    if (exitstigUser) {
-      throw new BadRequestException(Err.USER.EXISTING_USER);
-    }
+    await this.findUserByEmail(createUserDto.email);
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     return await this.userRepository.save({
       email: createUserDto.email,
@@ -26,19 +23,15 @@ export class UserService {
   }
 
   async findUserByEmail(email: string) {
-    return await this.userRepository.findOne({
+    const existingUser = await this.userRepository.findOne({
       where: {
         email,
       },
     });
-  }
-
-  async findUserBykakaoAccount(kakaoAccount: number) {
-    return await this.userRepository.findOne({
-      where: {
-        kakaoAccount,
-      },
-    });
+    if (!existingUser) {
+      throw new BadRequestException(Err.USER.NOT_FOUND);
+    }
+    return existingUser;
   }
 
   async findUserById(id: number) {

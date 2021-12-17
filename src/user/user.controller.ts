@@ -15,6 +15,7 @@ import { JwtAuthGuard } from './../auth/guard/jwt-auth.guard';
 import { User } from './../common/user.decorator';
 import { KakaoAuthGuard } from './../auth/guard/kakao-auth.guard';
 import { Response } from 'express';
+import { GoogleAuthGuard } from './../auth/guard/google-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -56,7 +57,26 @@ export class UserController {
     }
     // redirect 해야하는 page 등록
     // res.redirect('http://localhost:3000/main');
-    // res.end();
+    res.end();
+  }
+
+  @UseGuards(GoogleAuthGuard)
+  @Get('auth/google')
+  async googleLogin() {
+    return;
+  }
+
+  @UseGuards(GoogleAuthGuard)
+  @Get('auth/google/callback')
+  async googlecallback(@Req() req, @Res() res: Response): Promise<any> {
+    if (req.user.type === 'login') {
+      return this.authService.login(req.user);
+    } else {
+      res.cookie('once_token', req.user.once_token);
+    }
+    // redirect 해야하는 page 등록
+    // res.redirect('http://localhost:3000/main');
+    res.end();
   }
 
   // @Get(':id')

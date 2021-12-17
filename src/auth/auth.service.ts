@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
     private userService: UserService,
   ) {}
@@ -25,7 +25,23 @@ export class AuthService {
   }
 
   async validateKakao(kakaoId: number): Promise<any> {
-    const user = await this.userService.findUserBykakaoAccount(kakaoId);
+    const user = await this.userRepository.findOne({
+      where: {
+        kakaoAccount: kakaoId,
+      },
+    });
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
+
+  async validateGoogle(googleId: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: {
+        googleAccount: googleId,
+      },
+    });
     if (!user) {
       return null;
     }

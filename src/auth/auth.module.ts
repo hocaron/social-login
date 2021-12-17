@@ -9,6 +9,7 @@ import { User } from './../user/entities/user.entity';
 import { UserModule } from './../user/user.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { KakaoStrategy } from './strategy/kakao.strategy';
+import { GoogleStrategy } from './strategy/google.strategy';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { KakaoStrategy } from './strategy/kakao.strategy';
     LocalStrategy,
     JwtStrategy,
     KakaoStrategy,
+    GoogleStrategy,
   ],
   exports: [AuthService, JwtModule, PassportModule],
 })
