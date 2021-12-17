@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { Err } from './../error';
 import { existsSync } from 'fs';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -18,8 +19,11 @@ export class UserService {
     if (exitstigUser) {
       throw new BadRequestException(Err.USER.EXISTING_USER);
     }
-    // await bcrypt.hash(pass, 10)
-    return 'This action adds a new user';
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return await this.userRepository.save({
+      email,
+      password: hashedPassword,
+    });
   }
 
   async findUserByEmail(email: string) {
