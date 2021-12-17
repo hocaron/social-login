@@ -21,5 +21,5 @@ const config: TypeOrmModuleOptions = {
   charset: 'utf8mb4',
   synchronize: true,
 };
-console.log(config);
+
 export = config;

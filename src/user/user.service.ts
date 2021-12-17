@@ -33,6 +33,14 @@ export class UserService {
     });
   }
 
+  async findUserBykakaoAccount(kakaoAccount: number) {
+    return await this.userRepository.findOne({
+      where: {
+        kakaoAccount,
+      },
+    });
+  }
+
   async findUserById(id: number) {
     const existingUser = await this.userRepository.findOne({
       where: {

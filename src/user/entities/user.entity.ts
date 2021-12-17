@@ -18,13 +18,13 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   kakaoAccount: string;
 
-  @Column()
+  @Column({ nullable: true })
   googleAccount: string;
 
-  @Column()
+  @Column({ nullable: true })
   naverAccount: string;
 
   @Column({ type: 'text', nullable: true })

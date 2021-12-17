@@ -23,13 +23,13 @@ export class UserController {
     private authService: AuthService,
   ) {}
 
-  @Post('create')
+  @Post('signup')
   async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('auth/login')
+  @Post('login')
   async login(@User() user) {
     return this.authService.login(user);
   }
@@ -54,8 +54,9 @@ export class UserController {
     } else {
       res.cookie('once_token', req.user.once_token);
     }
-    res.redirect('http://localhost:3000/auth/singup');
-    res.end();
+    // redirect 해야하는 page 등록
+    // res.redirect('http://localhost:3000/main');
+    // res.end();
   }
 
   // @Get(':id')
