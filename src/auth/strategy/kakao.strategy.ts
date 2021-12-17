@@ -20,8 +20,6 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     const user_email = profile._json.kakao_account.email;
     const user_profile = {
       user_email,
-      user_nick,
-      user_provider,
     };
     const user = await this.authService.validateKakao(user_email);
     if (user === null) {

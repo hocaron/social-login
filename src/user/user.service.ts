@@ -4,6 +4,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { Err } from './../error';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -12,14 +13,14 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(email: string, password: string) {
-    const exitstigUser = await this.findUserByEmail(email);
+  async create(createUserDto: CreateUserDto) {
+    const exitstigUser = await this.findUserByEmail(createUserDto.email);
     if (exitstigUser) {
       throw new BadRequestException(Err.USER.EXISTING_USER);
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     return await this.userRepository.save({
-      email,
+      email: createUserDto.email,
       password: hashedPassword,
     });
   }

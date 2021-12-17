@@ -23,6 +23,11 @@ export class UserController {
     private authService: AuthService,
   ) {}
 
+  @Post('create')
+  async create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
+  }
+
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@User() user) {
@@ -51,11 +56,6 @@ export class UserController {
     }
     res.redirect('http://localhost:3000/auth/singup');
     res.end();
-  }
-
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
   }
 
   // @Get(':id')
