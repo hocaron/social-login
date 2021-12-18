@@ -5,6 +5,7 @@ import { UserService } from './../user/user.service';
 import { User } from './../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,7 @@ export class AuthService {
     return null;
   }
 
-  async validateKakao(kakaoId: number): Promise<any> {
+  async validateKakao(kakaoId: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: {
         kakaoAccount: kakaoId,
@@ -36,7 +37,7 @@ export class AuthService {
     return user;
   }
 
-  async validateGoogle(googleId: number): Promise<any> {
+  async validateGoogle(googleId: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: {
         googleAccount: googleId,
@@ -48,10 +49,59 @@ export class AuthService {
     return user;
   }
 
-  async login(user: any) {
-    const payload = { userId: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
+  async createOnceToken(socialType: string, socialId: string) {
+    const payload = {
+      type: socialType,
+      id: socialId,
     };
+    return await this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '15m',
+    });
+  }
+
+  async createAccessToken(user: any) {
+    const payload = {
+      id: user.id,
+      nickname: user.nickname,
+      type: 'accessToken',
+    };
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '15m',
+    });
+  }
+
+  async createRefreshToken(user: User) {
+    const payload = {
+      id: user.id,
+      nickname: user.nickname,
+      type: 'refreshToken',
+    };
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '20700m',
+    });
+    const tokenVerify = await this.tokenValidate(token);
+    const tokenExp = new Date(tokenVerify['exp'] * 1000);
+
+    const refresh_token = CryptoJS.AES.encrypt(
+      JSON.stringify(token),
+      process.env.AES_KEY,
+    ).toString();
+
+    await await this.userRepository
+      .createQueryBuilder('user')
+      .update()
+      .set({ refreshToken: refresh_token })
+      .where('user.id = :id', { id: user.id })
+      .execute();
+    return { refresh_token, tokenExp };
+  }
+
+  async tokenValidate(token: string) {
+    return await this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET,
+    });
   }
 }

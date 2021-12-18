@@ -17,11 +17,11 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     profile: any,
     done: any,
   ): Promise<any> {
-    const kakaoId = profile._json.id;
+    const kakaoId = String(profile.id);
     const user = await this.authService.validateKakao(kakaoId);
     if (user === null) {
       // 유저가 없을때
-      return { kakaoId, type: 'once' };
+      return { kakaoId, type: 'kakao' };
     }
 
     // 유저가 있을때

@@ -32,7 +32,7 @@ export class UserController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@User() user) {
-    return this.authService.login(user);
+    return this.authService.createAccessToken(user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -51,12 +51,15 @@ export class UserController {
   @Get('auth/kakao/callback')
   async kakaocallback(@Req() req, @Res() res: Response): Promise<any> {
     if (req.user.type === 'login') {
-      return this.authService.login(req.user);
+      const accessToken = await this.authService.createAccessToken(req.user);
+      res.cookie('accessToken', accessToken);
     } else {
-      res.cookie('once_token', req.user.once_token);
+      const onceToken = await this.authService.createOnceToken(
+        req.user.type,
+        req.user.kakaoId,
+      );
+      res.cookie('onceToken', onceToken);
     }
-    // redirect 해야하는 page 등록
-    // res.redirect('http://localhost:3000/main');
     res.end();
   }
 
@@ -70,9 +73,14 @@ export class UserController {
   @Get('auth/google/callback')
   async googlecallback(@Req() req, @Res() res: Response): Promise<any> {
     if (req.user.type === 'login') {
-      return this.authService.login(req.user);
+      const accessToken = await this.authService.createAccessToken(req.user);
+      res.cookie('accessToken', accessToken);
     } else {
-      res.cookie('once_token', req.user.once_token);
+      const onceToken = await this.authService.createOnceToken(
+        req.user.type,
+        req.user.googleId,
+      );
+      res.cookie('onceToken', onceToken);
     }
     // redirect 해야하는 page 등록
     // res.redirect('http://localhost:3000/main');

@@ -45,4 +45,6 @@ export class UserService {
     }
     return existingUser;
   }
+
+  async registUser(user, nickname: string) {}
 }

@@ -23,9 +23,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const googleId = profile.id;
     const user = await this.authService.validateGoogle(googleId);
     if (user === null) {
-      // 유저가 없을때
-
-      return { googleId, type: 'once' };
+      return { googleId, type: 'google' };
     }
 
     // 유저가 있을때
