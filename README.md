@@ -2,6 +2,6 @@
 - [x] local strategy
 - [x] kakao strategy
 - [x] google strategy
-- [ ] naver strategy
+- [x] naver strategy
 - [x] jwt access token strategy
 - [ ] jwt refresh token strategy
