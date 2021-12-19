@@ -4,7 +4,8 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { Err } from './../error';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateLocalUserDto } from './dto/create-local-user.dto';
+import { CreateSocialUserDto } from './dto/create-social-user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,13 +14,31 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    await this.findUserByEmail(createUserDto.email);
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+  async localRegister(createLocalUserDto: CreateLocalUserDto) {
+    await this.findUserByEmail(createLocalUserDto.email);
+    const hashedPassword = await bcrypt.hash(createLocalUserDto.password, 10);
     return await this.userRepository.save({
-      email: createUserDto.email,
+      email: createLocalUserDto.email,
       password: hashedPassword,
     });
+  }
+
+  async socialRegister(user, createSocialUserDto: CreateSocialUserDto) {
+    const socialId = user.id;
+    if (user.type === 'login_token') {
+      throw new BadRequestException(Err.USER.EXISTING_USER);
+    }
+    // 1회용 토큰인경우
+    else if (user.type === 'kakao') {
+      const kakaoId = socialId;
+      return await this.userRepository.save({ kakaoAccount: kakaoId });
+    } else if (user.type === 'google') {
+      const kakaoId = socialId;
+      return await this.userRepository.save({ kakaoAccount: kakaoId });
+    } else if (user.type === 'naver') {
+      const kakaoId = socialId;
+      return await this.userRepository.save({ kakaoAccount: kakaoId });
+    }
   }
 
   async findUserByEmail(email: string) {
@@ -45,6 +64,4 @@ export class UserService {
     }
     return existingUser;
   }
-
-  async registUser(user, nickname: string) {}
 }

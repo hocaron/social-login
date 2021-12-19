@@ -9,6 +9,7 @@ import { UserModule } from './../user/user.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { KakaoStrategy } from './strategy/kakao.strategy';
 import { GoogleStrategy } from './strategy/google.strategy';
+import { NaverStrategy } from './strategy/naver.strategy';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { GoogleStrategy } from './strategy/google.strategy';
     JwtStrategy,
     KakaoStrategy,
     GoogleStrategy,
+    NaverStrategy,
   ],
   exports: [AuthService, JwtModule, PassportModule],
 })

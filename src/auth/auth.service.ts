@@ -49,6 +49,18 @@ export class AuthService {
     return user;
   }
 
+  async validateNaver(naverId: string): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: {
+        naverAccount: naverId,
+      },
+    });
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
+
   async createOnceToken(socialType: string, socialId: string) {
     const payload = {
       type: socialType,

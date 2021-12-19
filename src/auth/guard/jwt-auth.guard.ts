@@ -43,7 +43,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       }
     } catch (error) {
       switch (error.message) {
-        // 토큰에 대한 오류를 판단합니다.
         case 'invalid token':
           throw new BadRequestException(Err.TOKEN.INVALID_TOKEN);
 

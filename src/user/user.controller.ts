@@ -8,7 +8,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateLocalUserDto } from './dto/create-local-user.dto';
 import { AuthService } from './../auth/auth.service';
 import { LocalAuthGuard } from './../auth/guard/local-auth.guard';
 import { JwtAuthGuard } from './../auth/guard/jwt-auth.guard';
@@ -16,6 +16,8 @@ import { User } from './../common/user.decorator';
 import { KakaoAuthGuard } from './../auth/guard/kakao-auth.guard';
 import { Response } from 'express';
 import { GoogleAuthGuard } from './../auth/guard/google-auth.guard';
+import { NaverAuthGuard } from './../auth/guard/naver-auth.guard';
+import { CreateSocialUserDto } from './dto/create-social-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -24,13 +26,13 @@ export class UserController {
     private authService: AuthService,
   ) {}
 
-  @Post('signup')
-  async create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @Post('join')
+  async localRegister(@Body() createLocalUserDto: CreateLocalUserDto) {
+    return this.userService.localRegister(createLocalUserDto);
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('login')
+  @Post('auth/email')
   async login(@User() user) {
     return this.authService.createAccessToken(user);
   }
@@ -87,8 +89,34 @@ export class UserController {
     res.end();
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userService.findOne(+id);
-  // }
+  @UseGuards(NaverAuthGuard)
+  @Get('auth/naver')
+  async naverLogin() {
+    return;
+  }
+
+  @UseGuards(NaverAuthGuard)
+  @Get('auth/naver/callback')
+  async naverallback(@Req() req, @Res() res: Response): Promise<any> {
+    if (req.user.type === 'login') {
+      const accessToken = await this.authService.createAccessToken(req.user);
+      res.cookie('accessToken', accessToken);
+    } else {
+      const onceToken = await this.authService.createOnceToken(
+        req.user.type,
+        req.user.kakaoId,
+      );
+      res.cookie('onceToken', onceToken);
+    }
+    res.end();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('join/social')
+  async socailRegister(
+    @User() user,
+    createSocialUserDto: CreateSocialUserDto,
+  ): Promise<any> {
+    return await this.userService.socialRegister(user, createSocialUserDto);
+  }
 }
