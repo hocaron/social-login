@@ -68,7 +68,7 @@ export class UserService {
   async findUserByEmail(email: string) {
     const existingUser = await this.userRepository.findOne({
       where: {
-        email,
+        email: email,
       },
     });
     if (!existingUser) {

@@ -36,8 +36,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       // 토큰 검증
       const tokenVerify = await this.authService.tokenValidate(token);
       if (tokenVerify.type === 'accessToken') {
-        const user = await this.userService.findUserById(tokenVerify.id);
-        return user;
+        return await this.userService.findUserById(tokenVerify.id);
       } else {
         return tokenVerify;
       }

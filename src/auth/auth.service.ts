@@ -74,21 +74,22 @@ export class AuthService {
 
   async createAccessToken(user: any) {
     const payload = {
+      type: 'accessToken',
       id: user.id,
       nickname: user.nickname,
-      type: 'accessToken',
     };
-    return this.jwtService.sign(payload, {
+    const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: '15m',
     });
+    return accessToken;
   }
 
   async createRefreshToken(user: User) {
     const payload = {
+      type: 'refreshToken',
       id: user.id,
       nickname: user.nickname,
-      type: 'refreshToken',
     };
     const token = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
@@ -97,7 +98,7 @@ export class AuthService {
     const tokenVerify = await this.tokenValidate(token);
     const tokenExp = new Date(tokenVerify['exp'] * 1000);
 
-    const refresh_token = CryptoJS.AES.encrypt(
+    const refreshToken = CryptoJS.AES.encrypt(
       JSON.stringify(token),
       process.env.AES_KEY,
     ).toString();
@@ -105,10 +106,10 @@ export class AuthService {
     await await this.userRepository
       .createQueryBuilder('user')
       .update()
-      .set({ refreshToken: refresh_token })
+      .set({ refreshToken: refreshToken })
       .where('user.id = :id', { id: user.id })
       .execute();
-    return { refresh_token, tokenExp };
+    return { refreshToken, tokenExp };
   }
 
   async tokenValidate(token: string) {

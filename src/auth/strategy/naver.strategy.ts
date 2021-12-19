@@ -20,7 +20,6 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
     done: any,
   ): Promise<any> {
     const naverId = profile.id;
-    console.log(naverId);
     const user = await this.authService.validateNaver(naverId);
     if (user === null) {
       // 유저가 없을때

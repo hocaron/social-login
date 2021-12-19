@@ -32,10 +32,11 @@ export class UserController {
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('auth/email')
+  @Post('auth/login')
   async login(@User() user) {
     const accessToken = await this.authService.createAccessToken(user);
-    return { accessToken };
+    const refreshToken = await this.authService.createRefreshToken(user);
+    return { accessToken, refreshToken };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -52,18 +53,18 @@ export class UserController {
 
   @UseGuards(KakaoAuthGuard)
   @Get('auth/kakao/callback')
-  async kakaocallback(@Req() req, @Res() res: Response): Promise<any> {
-    if (req.user.type === 'login') {
-      const accessToken = await this.authService.createAccessToken(req.user);
-      res.cookie('accessToken', accessToken);
+  async kakaocallback(@User() user, @Res() res: Response): Promise<any> {
+    if (user.type === 'login') {
+      const accessToken = await this.authService.createAccessToken(user.user);
+      const refreshToken = await this.authService.createRefreshToken(user.user);
+      res.send({ accessToken, refreshToken });
     } else {
       const onceToken = await this.authService.createOnceToken(
-        req.user.type,
-        req.user.kakaoId,
+        user.type,
+        user.kakaoId,
       );
-      res.cookie('onceToken', onceToken);
+      res.send({ onceToken });
     }
-    res.end();
   }
 
   @UseGuards(GoogleAuthGuard)
@@ -74,20 +75,18 @@ export class UserController {
 
   @UseGuards(GoogleAuthGuard)
   @Get('auth/google/callback')
-  async googlecallback(@Req() req, @Res() res: Response): Promise<any> {
-    if (req.user.type === 'login') {
-      const accessToken = await this.authService.createAccessToken(req.user);
-      res.cookie('accessToken', accessToken);
+  async googlecallback(@User() user, @Res() res: Response): Promise<any> {
+    if (user.type === 'login') {
+      const accessToken = await this.authService.createAccessToken(user.user);
+      const refreshToken = await this.authService.createRefreshToken(user.user);
+      res.send({ accessToken, refreshToken });
     } else {
       const onceToken = await this.authService.createOnceToken(
-        req.user.type,
-        req.user.googleId,
+        user.type,
+        user.googleId,
       );
-      res.cookie('onceToken', onceToken);
+      res.send({ onceToken });
     }
-    // redirect 해야하는 page 등록
-    // res.redirect('http://localhost:3000/main');
-    res.end();
   }
 
   @UseGuards(NaverAuthGuard)
@@ -98,18 +97,18 @@ export class UserController {
 
   @UseGuards(NaverAuthGuard)
   @Get('auth/naver/callback')
-  async naverallback(@Req() req, @Res() res: Response): Promise<any> {
-    if (req.user.type === 'login') {
-      const accessToken = await this.authService.createAccessToken(req.user);
-      res.cookie('accessToken', accessToken);
+  async naverallback(@User() user, @Res() res: Response): Promise<any> {
+    if (user.type === 'login') {
+      const accessToken = await this.authService.createAccessToken(user.user);
+      const refreshToken = await this.authService.createRefreshToken(user.user);
+      res.send({ accessToken, refreshToken });
     } else {
       const onceToken = await this.authService.createOnceToken(
-        req.user.type,
-        req.user.naverId,
+        user.type,
+        user.naverId,
       );
-      res.cookie('onceToken', onceToken);
+      res.send({ onceToken });
     }
-    res.end();
   }
 
   @UseGuards(JwtAuthGuard)

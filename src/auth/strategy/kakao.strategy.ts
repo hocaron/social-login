@@ -21,10 +21,10 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     const user = await this.authService.validateKakao(kakaoId);
     if (user === null) {
       // 유저가 없을때
-      return { kakaoId, type: 'kakao' };
+      done(null, { kakaoId, type: 'kakao' });
     }
 
     // 유저가 있을때
-    return { user, type: 'login' };
+    done(null, { user, type: 'login' });
   }
 }
