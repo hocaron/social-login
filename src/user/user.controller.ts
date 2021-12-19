@@ -18,6 +18,7 @@ import { Response } from 'express';
 import { GoogleAuthGuard } from './../auth/guard/google-auth.guard';
 import { NaverAuthGuard } from './../auth/guard/naver-auth.guard';
 import { CreateSocialUserDto } from './dto/create-social-user.dto';
+import { JwtRefreshGuard } from './../auth/guard/jwt-refresh.guard';
 
 @Controller('user')
 export class UserController {
@@ -43,6 +44,12 @@ export class UserController {
   @Get('profile')
   getProfile(@User() user) {
     return user;
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Get('auth/refresh-token')
+  async reissueRefreshToken(@User() user) {
+    return await this.authService.reissueRefreshToken(user);
   }
 
   @UseGuards(KakaoAuthGuard)

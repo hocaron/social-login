@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from './../user/user.service';
@@ -6,20 +6,27 @@ import { User } from './../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as CryptoJS from 'crypto-js';
+import { Err } from './../error';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
-    private userService: UserService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.userService.findUserByEmail(email);
-    const password = await bcrypt.compare(pass, user.password);
+    const existingUser = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+    });
+    if (!existingUser) {
+      throw new BadRequestException(Err.USER.NOT_FOUND);
+    }
+    const password = await bcrypt.compare(pass, existingUser.password);
     if (password) {
-      const { password, ...userWithoutPassword } = user;
+      const { password, ...userWithoutPassword } = existingUser;
       return userWithoutPassword;
     }
     return null;
@@ -116,5 +123,49 @@ export class AuthService {
     return await this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET,
     });
+  }
+
+  async reissueRefreshToken(user: User) {
+    const existingUser = await this.userRepository.findOne({
+      where: {
+        id: user.id,
+      },
+    });
+    if (!existingUser) {
+      throw new BadRequestException(Err.USER.NOT_FOUND);
+    }
+    const payload = {
+      id: user.id,
+      nickname: user.nickname,
+      type: 'refreshToken',
+    };
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '20700m',
+    });
+    const tokenVerify = await this.tokenValidate(token);
+    const tokenExp = new Date(tokenVerify['exp'] * 1000);
+    const current_time = new Date();
+    const time_remaining = Math.floor(
+      (tokenExp.getTime() - current_time.getTime()) / 1000 / 60 / 60,
+    );
+
+    if (time_remaining > 10) {
+      throw new BadRequestException(Err.TOKEN.JWT_NOT_REISSUED);
+    }
+
+    const refresh_token = CryptoJS.AES.encrypt(
+      JSON.stringify(token),
+      process.env.AES_KEY,
+    ).toString();
+
+    await await this.userRepository
+      .createQueryBuilder('user')
+      .update()
+      .set({ refreshToken: refresh_token })
+      .where('user.id = :id', { id: user.id })
+      .execute();
+    const access_token = await this.createAccessToken(user);
+    return { access_token, refresh_token: { refresh_token, tokenExp } };
   }
 }
