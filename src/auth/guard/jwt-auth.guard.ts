@@ -44,6 +44,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     } catch (error) {
       switch (error.message) {
         case 'invalid token':
+          console.log(error.message);
+          throw new BadRequestException(Err.TOKEN.INVALID_TOKEN);
+
+        case 'invalid signature':
+          console.log(error.message);
           throw new BadRequestException(Err.TOKEN.INVALID_TOKEN);
 
         case 'jwt expired':
