@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class NaverStrategy extends PassportStrategy(Strategy) {
+export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor(private authService: AuthService) {
     super({
       clientID: process.env.NAVER_CLIENT_ID,
@@ -19,11 +19,12 @@ export class NaverStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: any,
   ): Promise<any> {
-    const naverId = String(profile.id);
-    const user = await this.authService.validateKakao(naverId);
+    const naverId = profile.id;
+    console.log(naverId);
+    const user = await this.authService.validateNaver(naverId);
     if (user === null) {
       // 유저가 없을때
-      return { naverId, type: 'kakao' };
+      return { naverId, type: 'naver' };
     }
 
     // 유저가 있을때

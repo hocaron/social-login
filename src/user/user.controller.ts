@@ -12,7 +12,7 @@ import { CreateLocalUserDto } from './dto/create-local-user.dto';
 import { AuthService } from './../auth/auth.service';
 import { LocalAuthGuard } from './../auth/guard/local-auth.guard';
 import { JwtAuthGuard } from './../auth/guard/jwt-auth.guard';
-import { User } from './../common/user.decorator';
+import { User } from '../common/decorator/user.decorator';
 import { KakaoAuthGuard } from './../auth/guard/kakao-auth.guard';
 import { Response } from 'express';
 import { GoogleAuthGuard } from './../auth/guard/google-auth.guard';
@@ -34,7 +34,8 @@ export class UserController {
   @UseGuards(LocalAuthGuard)
   @Post('auth/email')
   async login(@User() user) {
-    return this.authService.createAccessToken(user);
+    const accessToken = await this.authService.createAccessToken(user);
+    return { accessToken };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -104,7 +105,7 @@ export class UserController {
     } else {
       const onceToken = await this.authService.createOnceToken(
         req.user.type,
-        req.user.kakaoId,
+        req.user.naverId,
       );
       res.cookie('onceToken', onceToken);
     }
@@ -115,7 +116,7 @@ export class UserController {
   @Get('join/social')
   async socailRegister(
     @User() user,
-    createSocialUserDto: CreateSocialUserDto,
+    @Body() createSocialUserDto: CreateSocialUserDto,
   ): Promise<any> {
     return await this.userService.socialRegister(user, createSocialUserDto);
   }
