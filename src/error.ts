@@ -28,11 +28,11 @@ export const Err = {
     },
     NOT_SEND_REFRESH_TOKEN: {
       code: 401,
-      message: 'Refresh Token 전송 안됨',
+      message: 'Refresh Token이 전송되지 않았습니다.',
     },
     NOT_SEND_TOKEN: {
       code: 401,
-      message: 'Token 전송 안됨',
+      message: 'Token이 전송되지 않았습니다.',
     },
   },
   KAKAO: {
