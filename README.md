@@ -4,4 +4,5 @@
 - [x] google strategy
 - [x] naver strategy
 - [x] jwt access token strategy
-- [ ] jwt refresh token strategy
+- [x] jwt refresh token strategy
+- [ ] mail authentication code
