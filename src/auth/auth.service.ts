@@ -19,6 +19,11 @@ export class AuthService {
   ) {}
 
   async sendEmail({ email }: SendEmailDto) {
+    /*
+    TODO
+    인증번호 생성
+    인증번호 repository에서 꺼내는 코드
+    */
     const verifyCode = '1234';
 
     try {
@@ -37,6 +42,11 @@ export class AuthService {
     email,
     code,
   }: VerifyCodeDto): Promise<VerifyCodeResponseDto> {
+    /*
+    TODO
+    인증번호 repository에서 비교하는 코드
+    인증번호 사용 후 삭제하는 코드
+    */
     if (code == '1234') {
       return { email, isVerify: true, isCodeExpired: false };
     }
