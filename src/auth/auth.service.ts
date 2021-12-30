@@ -1,19 +1,46 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from './../user/user.service';
 import { User } from './../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as CryptoJS from 'crypto-js';
 import { Err } from './../error';
+import { MailSender } from './mail-sender';
+import { SendEmailDto } from './dto/send-email.dto';
+import { VerifyCodeDto, VerifyCodeResponseDto } from './dto/verify-code.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
+    private readonly mailSender: MailSender,
   ) {}
+
+  async sendEmail({ email }: SendEmailDto) {
+    const verifyCode = '1234';
+
+    try {
+      await this.mailSender.send({
+        to: email,
+        subject: 'Hocaron 메일 인증',
+        text: `아래의 코드를 입력해 인증을 완료해 주세요. ${verifyCode} 이 번호는 10분간 유효합니다.`,
+      });
+    } catch (e) {
+      throw new Error(`Error occurred while sending email: ${e}`);
+    }
+    return { isSend: true };
+  }
+
+  async verifyCode({
+    email,
+    code,
+  }: VerifyCodeDto): Promise<VerifyCodeResponseDto> {
+    if (code == '1234') {
+      return { email, isVerify: true, isCodeExpired: false };
+    }
+  }
 
   async validateUser(email: string, pass: string): Promise<any> {
     const existingUser = await this.userRepository.findOne({

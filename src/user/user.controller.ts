@@ -19,6 +19,8 @@ import { GoogleAuthGuard } from './../auth/guard/google-auth.guard';
 import { NaverAuthGuard } from './../auth/guard/naver-auth.guard';
 import { CreateSocialUserDto } from './dto/create-social-user.dto';
 import { JwtRefreshGuard } from './../auth/guard/jwt-refresh.guard';
+import { SendEmailDto } from './../auth/dto/send-email.dto';
+import { VerifyCodeDto } from './../auth/dto/verify-code.dto';
 
 @Controller('user')
 export class UserController {
@@ -26,6 +28,16 @@ export class UserController {
     private readonly userService: UserService,
     private authService: AuthService,
   ) {}
+
+  @Post('send-email')
+  async sendEmail(@Body() dto: SendEmailDto) {
+    return await this.authService.sendEmail(dto);
+  }
+
+  @Post('verify-code')
+  async verifyCode(@Body() dto: VerifyCodeDto) {
+    return await this.authService.verifyCode(dto);
+  }
 
   @Post('join')
   async localRegister(@Body() createLocalUserDto: CreateLocalUserDto) {

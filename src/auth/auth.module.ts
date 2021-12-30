@@ -10,10 +10,13 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { KakaoStrategy } from './strategy/kakao.strategy';
 import { GoogleStrategy } from './strategy/google.strategy';
 import { NaverStrategy } from './strategy/naver.strategy';
+import { MailSender } from './mail-sender';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     PassportModule,
+    ConfigModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '60m' },
@@ -29,6 +32,7 @@ import { NaverStrategy } from './strategy/naver.strategy';
     KakaoStrategy,
     GoogleStrategy,
     NaverStrategy,
+    MailSender,
   ],
   exports: [AuthService, JwtModule, PassportModule],
 })
