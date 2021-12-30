@@ -6,3 +6,16 @@
 - [x] jwt access token strategy
 - [x] jwt refresh token strategy
 - [ ] mail authentication code
+
+## dotenv 설정
+```
+KAKAO_KEY=
+GOOGLE_CLIENT_ID=
+GOOGLE_SECRET=
+JWT_SECRET=
+AES_KEY=
+NAVER_CLIENT_ID=
+NAVER_CLIENT_SECRET=
+GMAIL_USER=
+GMAIL_PASS=
+```
