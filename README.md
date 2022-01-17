@@ -5,7 +5,7 @@
 - [x] naver strategy
 - [x] jwt access token strategy
 - [x] jwt refresh token strategy
-- [ ] mail authentication code
+- [x] mail authentication code
 
 ## dotenv 설정
 ```

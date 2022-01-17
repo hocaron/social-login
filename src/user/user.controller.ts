@@ -73,23 +73,23 @@ export class UserController {
 
   @UseGuards(KakaoAuthGuard)
   @Get('auth/kakao')
-  async kakaoLogin() {
+  async signInWithKakao() {
     return;
   }
 
   @UseGuards(KakaoAuthGuard)
   @Get('auth/kakao/callback')
-  async kakaocallback(@User() user, @Res() res: Response): Promise<any> {
+  async kakaocallback(@User() user) {
     if (user.type === 'login') {
       const accessToken = await this.authService.createAccessToken(user.user);
       const refreshToken = await this.authService.createRefreshToken(user.user);
-      res.send({ accessToken, refreshToken });
+      return { accessToken, refreshToken };
     } else {
       const onceToken = await this.authService.createOnceToken(
         user.type,
         user.kakaoId,
       );
-      res.send({ onceToken });
+      return { onceToken };
     }
   }
 
@@ -101,17 +101,17 @@ export class UserController {
 
   @UseGuards(GoogleAuthGuard)
   @Get('auth/google/callback')
-  async googlecallback(@User() user, @Res() res: Response): Promise<any> {
+  async googlecallback(@User() user): Promise<any> {
     if (user.type === 'login') {
       const accessToken = await this.authService.createAccessToken(user.user);
       const refreshToken = await this.authService.createRefreshToken(user.user);
-      res.send({ accessToken, refreshToken });
+      return { accessToken, refreshToken };
     } else {
       const onceToken = await this.authService.createOnceToken(
         user.type,
         user.googleId,
       );
-      res.send({ onceToken });
+      return { onceToken };
     }
   }
 
@@ -123,17 +123,17 @@ export class UserController {
 
   @UseGuards(NaverAuthGuard)
   @Get('auth/naver/callback')
-  async naverallback(@User() user, @Res() res: Response): Promise<any> {
+  async naverallback(@User() user): Promise<any> {
     if (user.type === 'login') {
       const accessToken = await this.authService.createAccessToken(user.user);
       const refreshToken = await this.authService.createRefreshToken(user.user);
-      res.send({ accessToken, refreshToken });
+      return { accessToken, refreshToken };
     } else {
       const onceToken = await this.authService.createOnceToken(
         user.type,
         user.naverId,
       );
-      res.send({ onceToken });
+      return { onceToken };
     }
   }
 
