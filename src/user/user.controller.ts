@@ -79,17 +79,22 @@ export class UserController {
 
   @UseGuards(KakaoAuthGuard)
   @Get('auth/kakao/callback')
-  async kakaocallback(@User() user) {
+  async kakaocallback(@User() user, @Res() res: Response) {
     if (user.type === 'login') {
       const accessToken = await this.authService.createAccessToken(user.user);
       const refreshToken = await this.authService.createRefreshToken(user.user);
-      return { accessToken, refreshToken };
+      res.cookie('accessToken', accessToken);
+      res.cookie('refreshToken', refreshToken);
+      res.redirect('http://localhost:3000');
+      res.end();
     } else {
       const onceToken = await this.authService.createOnceToken(
         user.type,
         user.kakaoId,
       );
-      return { onceToken };
+      res.cookie('onceToken', onceToken);
+      res.redirect('http://localhost:3000');
+      res.end();
     }
   }
 
@@ -101,17 +106,22 @@ export class UserController {
 
   @UseGuards(GoogleAuthGuard)
   @Get('auth/google/callback')
-  async googlecallback(@User() user): Promise<any> {
+  async googlecallback(@User() user, @Res() res: Response): Promise<any> {
     if (user.type === 'login') {
       const accessToken = await this.authService.createAccessToken(user.user);
       const refreshToken = await this.authService.createRefreshToken(user.user);
-      return { accessToken, refreshToken };
+      res.cookie('accessToken', accessToken);
+      res.cookie('refreshToken', refreshToken);
+      res.redirect('http://localhost:3000');
+      res.end();
     } else {
       const onceToken = await this.authService.createOnceToken(
         user.type,
         user.googleId,
       );
-      return { onceToken };
+      res.cookie('onceToken', onceToken);
+      res.redirect('http://localhost:3000');
+      res.end();
     }
   }
 
@@ -123,17 +133,22 @@ export class UserController {
 
   @UseGuards(NaverAuthGuard)
   @Get('auth/naver/callback')
-  async naverallback(@User() user): Promise<any> {
+  async naverallback(@User() user, @Res() res: Response): Promise<any> {
     if (user.type === 'login') {
       const accessToken = await this.authService.createAccessToken(user.user);
       const refreshToken = await this.authService.createRefreshToken(user.user);
-      return { accessToken, refreshToken };
+      res.cookie('accessToken', accessToken);
+      res.cookie('refreshToken', refreshToken);
+      res.redirect('http://localhost:3000');
+      res.end();
     } else {
       const onceToken = await this.authService.createOnceToken(
         user.type,
         user.naverId,
       );
-      return { onceToken };
+      res.cookie('onceToken', onceToken);
+      res.redirect('http://localhost:3000');
+      res.end();
     }
   }
 
